@@ -1,5 +1,5 @@
 ---
-name: "[DailyRoutine]"
+name: "DailyRoutine"
 about: 오늘 뭐할지 써보세요!
 title: "[DailyRoutine]"
 labels: ''
