@@ -12,17 +12,74 @@ class HashTable {
 
   insert(key, value) {
     const index = hashFunction(key, this._bucketNum);
+    let bucket = [];
+    if(!this._storage.get(index)) {
+      bucket.push([key, value])
+      this._storage.set(index, bucket)
+    } else {
+      bucket = this._storage.get(index)
+      let isAdded = false;
+      for(let tuple of bucket) {
+        if(tuple[0] === key) {
+          tuple[1] = value
+        } else {
+          if(isAdded === false) {
+            bucket.push([key, value])
+            isAdded = true
+          }
+        }
+      }
+      this._storage.set(index, bucket)
+    }
+    this._size++;
+
+    if(this._size > this._bucketNum * 0.75) {
+      this._resize(this._bucketNum * 2)
+    }
   }
 
   retrieve(key) {
     const index = hashFunction(key, this._bucketNum);
+    let bucket = this._storage.get(index)
+    if(!bucket) {
+      return;
+    } else {
+      for(let tuple of bucket) {
+        if(tuple[0] === key) {
+          return tuple[1]
+        }
+      }
+    }
   }
 
   remove(key) {
     const index = hashFunction(key, this._bucketNum);
+    let bucket = this._storage.get(index)
+    for(let i = 0; i < bucket.length; i++) {
+      if(bucket[i][0] === key) {
+        bucket.splice(i, 1)
+      }
+    }
+    this._size--;
+
+    if(this._size < this._bucketNum * 0.25) {
+      this._resize(this._bucketNum / 2)
+    }
   }
 
-  _resize(newBucketNum) {}
+  _resize(newBucketNum) {
+    const copiedStorage = this._storage
+    this._storage = LimitedArray(newBucketNum)
+    this._size = 0
+    this._bucketNum = newBucketNum
+
+    copiedStorage.each((bucket) => {
+      for(let key in bucket) {
+        let entry = bucket[key]
+        this.insert(entry[0], entry[1])
+      }
+    })
+  }
 }
 
 module.exports = HashTable;
