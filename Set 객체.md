@@ -4,7 +4,7 @@
 # Set 문법
 > new Set([iterable])
 
-iterable : 반복가능한 객체
+iterable : 반복가능한 객체<br/>
 반환값 : 새로운 `Set` 객체
 
 ex)
